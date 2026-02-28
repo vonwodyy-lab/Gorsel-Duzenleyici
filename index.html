@@ -3,60 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASSA SPOR Resim Düzenleyici v2</title>
+    <title>ASSA SPOR SEO Görsel Düzenleyici v3</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0;
+            min-height: 100vh; margin: 0; padding: 20px;
         }
-
-        .controls { margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-
+        .controls { 
+            background: white; padding: 20px; border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        input, button { padding: 10px; border-radius: 6px; border: 1px solid #ddd; }
+        button { background-color: #2563eb; color: white; cursor: pointer; font-weight: bold; border: none; }
+        button:hover { background-color: #1d4ed8; }
+        
         .image-container {
-            position: relative;
-            width: 80vw; max-width: 500px;
-            aspect-ratio: 4 / 5;
-            overflow: hidden; border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            background-color: #000;
+            position: relative; width: 80vw; max-width: 500px;
+            aspect-ratio: 4 / 5; overflow: hidden; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); background-color: #000; margin-top: 20px;
         }
-
-        #preview {
-            width: 100%; height: 100%;
-            object-fit: cover; object-position: center;
-            filter: brightness(1.05) contrast(1.1) saturate(1.1);
-            image-rendering: high-quality; transform: translateZ(0);
-            display: none; /* Resim seçilmeden görünmez */
-        }
-
+        #preview { width: 100%; height: 100%; object-fit: cover; filter: brightness(1.05) contrast(1.1) saturate(1.1); display: none; }
         .watermark {
             position: absolute; bottom: 15px; right: 15px;
             background-color: rgba(0, 0, 0, 0.6); color: white;
-            padding: 8px 15px; border-radius: 20px;
-            font-size: 14px; font-weight: bold;
-            text-transform: uppercase; letter-spacing: 1px;
-            pointer-events: none; z-index: 10;
+            padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 1px; pointer-events: none;
         }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <label for="imageInput"><strong>ASSA SPOR - Resim Seç: </strong></label>
+        <label><strong>1. Ürün Adını Gir (SEO İçin):</strong></label>
+        <input type="text" id="productName" placeholder="Örn: Profesyonel Ağırlık Sehpası">
+        
+        <label><strong>2. Resim Seç:</strong></label>
         <input type="file" id="imageInput" accept="image/*">
+        
+        <button id="downloadBtn" style="display: none;">Düzenlenen Resmi İndir</button>
     </div>
 
-    <div class="image-container">
+    <div class="image-container" id="captureArea">
         <img id="preview" src="" alt="Önizleme">
         <div class="watermark">ASSA SPOR</div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         const imageInput = document.getElementById('imageInput');
         const preview = document.getElementById('preview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const productNameInput = document.getElementById('productName');
+
+        // Türkçe karakterleri İngilizceye çeviren fonksiyon
+        function turkishToEnglish(text) {
+            const map = {'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u',' ':'-'};
+            return text.toLowerCase().replace(/[çğıöşü ]/g, m => map[m]);
+        }
 
         imageInput.addEventListener('change', function() {
             const file = this.files[0];
@@ -65,9 +72,22 @@
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
+                    downloadBtn.style.display = 'block';
                 }
                 reader.readAsDataURL(file);
             }
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            const area = document.getElementById('captureArea');
+            const fileName = turkishToEnglish(productNameInput.value || 'assa-spor-urun') + '.jpg';
+            
+            html2canvas(area).then(canvas => {
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            });
         });
     </script>
 </body>
