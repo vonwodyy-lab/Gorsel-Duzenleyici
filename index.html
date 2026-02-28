@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASSA SPOR Resim Düzenleyici v2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
+        }
+
+        .controls { margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        .image-container {
+            position: relative;
+            width: 80vw; max-width: 500px;
+            aspect-ratio: 4 / 5;
+            overflow: hidden; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background-color: #000;
+        }
+
+        #preview {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            filter: brightness(1.05) contrast(1.1) saturate(1.1);
+            image-rendering: high-quality; transform: translateZ(0);
+            display: none; /* Resim seçilmeden görünmez */
+        }
+
+        .watermark {
+            position: absolute; bottom: 15px; right: 15px;
+            background-color: rgba(0, 0, 0, 0.6); color: white;
+            padding: 8px 15px; border-radius: 20px;
+            font-size: 14px; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 1px;
+            pointer-events: none; z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <label for="imageInput"><strong>ASSA SPOR - Resim Seç: </strong></label>
+        <input type="file" id="imageInput" accept="image/*">
+    </div>
+
+    <div class="image-container">
+        <img id="preview" src="" alt="Önizleme">
+        <div class="watermark">ASSA SPOR</div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
